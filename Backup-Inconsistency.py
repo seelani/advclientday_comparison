@@ -7,6 +7,9 @@ from datetime import datetime
 from datetime import timedelta
 import ast
 
+##CREATE A CREDENTIALS FILE NAME "credentials.txt", CONTENTS AS FOLLOWS: ['$USERNAME','$PASSWORD']
+##THE PROGRAM SHOULD HAVE NO ISSUE READING THE CREDENTIALS FILE.
+
 fileCredentials = open("credentials.txt","r")
 credentialList = fileCredentials.read()
 fileCredentials.close()
