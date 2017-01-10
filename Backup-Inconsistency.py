@@ -50,7 +50,7 @@ s_enddate = s_enddate + timedelta(days = 1)
 difference = (b_enddate - b_startdate)
 difference = difference + timedelta(days=2) #need to add 2 days to include start and end dates as well.
 diffin = int(difference.days)
-print (diffin) # debug line
+#print (diffin) # debug line
 
 #debug print (can be commented out)
 #print ('The requested start date is ' + str(i_startdate) + ' The requested end ate is: ' + str(i_enddate)) 
@@ -132,3 +132,55 @@ while k < len(backupdays):
 	newday = str(listday)
 	print (newday , '		' , backup_a[k] , '		' , backup_es[k] , '		' , backup_en[k] , '				' , sum_a[k] , '		' , sum_es[k] , '			' , sum_en[k] )
 	k+=1
+
+#========================================================#
+# So we everything prints out a-ok. Lets try comparing each storage type.
+#========================================================#
+
+# Essentials!
+k = 0
+errordates_es = list()
+while k < len(backupdays):
+	if backup_es[k] != sum_es[k]:
+		listday = datetime.strptime(backupdays[k], '%Y-%m-%d')
+		listday = datetime.date(listday)
+		listday = listday + timedelta(days = 2)
+		newday = str(listday)
+		errordates_es.append(newday)
+	k+=1
+if len(errordates_es) != 0:
+	print ("The values in summary report and backup report for essential backup hours for the following days are incorrect: ")
+	print (errordates_es)
+
+
+# Advanced!
+k = 0
+errordates_a = list()
+while k < len(backupdays):
+	if backup_a[k] != sum_a[k]:
+		listday = datetime.strptime(backupdays[k], '%Y-%m-%d')
+		listday = datetime.date(listday)
+		listday = listday + timedelta(days = 2)
+		newday = str(listday)
+		errordates_a.append(newday)
+	k+=1
+
+if len(errordates_a) != 0:
+	print ("The values in summary report and backup report for advanced backup hours for the following days are incorrect: ")
+	print (errordates_a)
+
+# Enterprise!
+k = 0
+errordates_en = list()
+while k < len(backupdays):
+	if backup_en[k] != sum_en[k]:
+		listday = datetime.strptime(backupdays[k], '%Y-%m-%d')
+		listday = datetime.date(listday)
+		listday = listday + timedelta(days = 2)
+		newday = str(listday)
+		errordates_en.append(newday)
+	k+=1
+
+if len(errordates_en) != 0:
+	print ("The values in summary report and backup report for enterprise backup hours for the following days are incorrect: ")
+	print (errordates_en)
