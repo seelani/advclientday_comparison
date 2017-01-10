@@ -184,3 +184,42 @@ while k < len(backupdays):
 if len(errordates_en) != 0:
 	print ("The values in summary report and backup report for enterprise backup hours for the following days are incorrect: ")
 	print (errordates_en)
+
+#=====================================#
+#Time to check adv_client dates as well.
+#=====================================#
+clientdays_sum_es = [0]*diffin
+clientdays_sum_a = [0]*diffin
+clientdays_sum_en = [0]*diffin
+
+clientdays_b_es = [0]*diffin
+clientdays_b_a = [0]*diffin
+clientdays_b_en = [0]*diffin
+
+a = 1
+summaryDates = list()
+while a < len(apvalue):
+	anline = apvalue[a]
+	if anline[1] == i_location:
+		summaryDates.append(anline[0])
+	a+=1
+
+b = 0
+bn = 0
+while b < len(backupdays):
+	bline = backupdays[b]
+	if bline[0] == backupdays[bn]:
+		if bline[5] != 0:
+			clientdays_b_es[b]+=1
+		elif bline[6] != 0:
+			clientdays_b_a[b]+=1
+		elif bline[7] != 0:
+			clientdays_b_en+=1
+	else:
+		bn+=1
+	b+=1
+print (clientdays_b_es)
+print (clientdays_b_a)
+print (clientdays_b_en)
+
+
