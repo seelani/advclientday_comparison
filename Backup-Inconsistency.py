@@ -53,8 +53,8 @@ diffin = int(difference.days)
 #print (diffin) # debug line
 
 #debug print (can be commented out)
-#print ('The requested start date is ' + str(i_startdate) + ' The requested end ate is: ' + str(i_enddate)) 
-#print ('-----')																								
+#print ('The requested start date is ' + str(i_startdate) + ' The requested end ate is: ' + str(i_enddate))
+#print ('-----')
 #print ('The adjusted start date is: ' + str(b_startdate) + ' The adjusted end date is: ' + str(b_enddate))
 
 #create a list of the given size to include each day
@@ -204,20 +204,33 @@ while a < len(apvalue):
 		summaryDates.append(anline[0])
 	a+=1
 
+bc = 1
 b = 0
 bn = 0
 while b < len(backupdays):
-	bline = backupdays[b]
-	if bline[0] == backupdays[bn]:
+	bline = backuplist[bc]
+	if bline [0] == backupdays[bn]:
+		print (bline[0], backupdays[bn])
 		if bline[5] != 0:
-			clientdays_b_es[b]+=1
-		elif bline[6] != 0:
-			clientdays_b_a[b]+=1
-		elif bline[7] != 0:
-			clientdays_b_en+=1
+			clientdays_b_es[bn]+=1
+			print (clientdays_b_es[bn])
+		if bline[6] != 0:
+			clientdays_b_a[bn]+=1
+		if bline[7] != 0:
+			clientdays_b_en[bn]+=1
 	else:
 		bn+=1
+		print (bline[0], backupdays[bn])
+		if bline[5] != 0:
+			clientdays_b_es[bn]+=1
+		if bline[6] != 0:
+			clientdays_b_a[bn]+=1
+		if bline[7] != 0:
+			clientdays_b_en[bn]+=1
+
 	b+=1
+	bc+=1
+
 print (clientdays_b_es)
 print (clientdays_b_a)
 print (clientdays_b_en)
