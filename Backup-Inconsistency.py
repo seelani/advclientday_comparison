@@ -53,8 +53,8 @@ diffin = int(difference.days)
 #print (diffin) # debug line
 
 #debug print (can be commented out)
-#print ('The requested start date is ' + str(i_startdate) + ' The requested end ate is: ' + str(i_enddate)) 
-#print ('-----')																								
+#print ('The requested start date is ' + str(i_startdate) + ' The requested end ate is: ' + str(i_enddate))
+#print ('-----')
 #print ('The adjusted start date is: ' + str(b_startdate) + ' The adjusted end date is: ' + str(b_enddate))
 
 #create a list of the given size to include each day
@@ -188,14 +188,25 @@ if len(errordates_en) != 0:
 #=====================================#
 #Time to check adv_client dates as well.
 #=====================================#
-clientdays_sum_es = [0]*diffin
-clientdays_sum_a = [0]*diffin
-clientdays_sum_en = [0]*diffin
-
 clientdays_b_es = [0]*diffin
 clientdays_b_a = [0]*diffin
 clientdays_b_en = [0]*diffin
 
+clientdays_sum_es = [0]*diffin
+clientdays_sum_a = [0]*diffin
+clientdays_sum_en = [0]*diffin
+
+i = 1
+j = 0
+while i  < len(apvalue):
+	newline = apvalue[i]
+	if newline[1] == i_location:
+		clientdays_sum_es[j] = int(newline[19])
+		clientdays_sum_a[j] = int(newline[20])
+		clientdays_sum_en[j]= int(newline[21])
+		j+=1
+	i+=1
+	
 a = 1
 summaryDates = list()
 while a < len(apvalue):
@@ -204,22 +215,61 @@ while a < len(apvalue):
 		summaryDates.append(anline[0])
 	a+=1
 
-b = 0
+#print (summaryDates, '\n')
+#print (clientdays_sum_es)
+#print (clientdays_sum_a)
+#print (clientdays_sum_en)
+#print ('\n')
+
+bc = 1
 bn = 0
-while b < len(backupdays):
-	bline = backupdays[b]
-	if bline[0] == backupdays[bn]:
-		if bline[5] != 0:
-			clientdays_b_es[b]+=1
-		elif bline[6] != 0:
-			clientdays_b_a[b]+=1
-		elif bline[7] != 0:
-			clientdays_b_en+=1
+while bc < len(backuplist):
+	bline = backuplist[bc]
+	if bline [0] == backupdays[bn]:
+		if int(bline[5]) != 0:
+			clientdays_b_es[bn]+=1
+		if int(bline[6]) != 0:
+			clientdays_b_a[bn]+=1
+		if int(bline[7]) != 0:
+			clientdays_b_en[bn]+=1	
 	else:
 		bn+=1
-	b+=1
-print (clientdays_b_es)
-print (clientdays_b_a)
-print (clientdays_b_en)
+		if int(bline[5]) != 0:
+			clientdays_b_es[bn]+=1
+		if int(bline[6]) != 0:
+			clientdays_b_a[bn]+=1
+		if int(bline[7]) != 0:
+			clientdays_b_en[bn]+=1
+	bc+=1
 
+#avalue = sum(clientdays_b_es)
+#bvalue = sum(clientdays_b_a)
+#cvalue = sum (clientdays_b_en)
+#print (clientdays_b_es)
+#print (avalue)
+#print (clientdays_b_a)
+#print (bvalue)
+#print (clientdays_b_en)
+#print (cvalue)
 
+#Okay we can assume that something is wrong somewhere?
+#We want to compare whats on the summary report against what is on the backup report.
+
+#loop through summary and get the value per day and compare
+errordates_adv_es = list()
+errordates_adv_a = list()
+errordates_adv_en = list()
+
+i = 0
+while i < len(summaryDates):
+	if clientdays_sum_es[i] != clientdays_b_es[i]:
+		errordates_adv_es.append(summaryDates[i])
+	if clientdays_sum_a[i] != clientdays_b_a[i]:
+		errordates_adv_a.append(summaryDates[i])
+	if clientdays_sum_en[i] != clientdays_b_en[i]:
+		errordates_adv_en.append(summaryDates[i])
+	i+=1
+print ('\n==========================')
+print ('The following essential client dates are incorrect: ', errordates_adv_es)
+print ('The following advanced client dates are incorrect: ',errordates_adv_a)
+print ('The following enterprise client dates are incorrect: ',errordates_adv_en)
