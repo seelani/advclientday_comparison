@@ -136,7 +136,7 @@ while k < len(backupdays):
 #========================================================#
 # So we everything prints out a-ok. Lets try comparing each storage type.
 #========================================================#
-
+print ('\n')
 # Essentials!
 k = 0
 errordates_es = list()
@@ -184,7 +184,7 @@ while k < len(backupdays):
 if len(errordates_en) != 0:
 	print ("The values in summary report and backup report for enterprise backup hours for the following days are incorrect: ")
 	print (errordates_en)
-
+print ('Do double check these values with your billing to ensure no undercharge/overcharge.')
 #=====================================#
 #Time to check adv_client dates as well.
 #=====================================#
@@ -269,7 +269,49 @@ while i < len(summaryDates):
 	if clientdays_sum_en[i] != clientdays_b_en[i]:
 		errordates_adv_en.append(summaryDates[i])
 	i+=1
-print ('\n==========================')
+print ('==========================')
 print ('The following essential client dates are incorrect: ', errordates_adv_es)
 print ('The following advanced client dates are incorrect: ',errordates_adv_a)
 print ('The following enterprise client dates are incorrect: ',errordates_adv_en)
+
+print ('\nA review of the administrative logs show that the following actions pertaining to backup were performed: \n')
+
+compiled_errordates_adv = errordates_adv_es + errordates_adv_a + errordates_adv_en
+compiled_errordates_adv = set(compiled_errordates_adv)
+compiled_errordates_adv = list(compiled_errordates_adv)
+compiled_errordates_adv.sort()
+#print (compiled_errordates_adv)
+adminvalues = apdriver.ex_audit_log_report(i_startdate,i_enddate)
+finaloutput =list()
+i = 1
+
+while i < len(adminvalues):
+	adminline = adminvalues[i]
+	admindate = adminline[1]
+	admindate = admindate[:10]
+	j = 0
+	while j < len(compiled_errordates_adv):
+		if admindate == compiled_errordates_adv[j]:
+			devicename = adminline [7]
+			newdevname=''
+			k = 0
+			while k < len(devicename):
+				if devicename[k] == '[':
+					break
+				else:
+					newdevname = newdevname + devicename[k]
+				k+=1
+		if 'Backup' in adminline[8] or 'backup' in adminline[8]:
+			tempstring = "['"+admindate+"','" +adminline[2]+"','"+newdevname+"','"+adminline[8]+"']" 
+			finaloutput.append(tempstring)
+
+		j+=1
+	i+=1
+
+finaloutput = set(finaloutput)
+finaloutput = list(finaloutput)
+
+lastCount = 0
+while lastCount < len (finaloutput):
+	print (finaloutput[lastCount])
+	lastCount+=1
