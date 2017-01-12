@@ -280,7 +280,7 @@ compiled_errordates_adv = errordates_adv_es + errordates_adv_a + errordates_adv_
 compiled_errordates_adv = set(compiled_errordates_adv)
 compiled_errordates_adv = list(compiled_errordates_adv)
 compiled_errordates_adv.sort()
-#print (compiled_errordates_adv)
+print (compiled_errordates_adv)
 adminvalues = apdriver.ex_audit_log_report(i_startdate,i_enddate)
 finaloutput =list()
 i = 1
