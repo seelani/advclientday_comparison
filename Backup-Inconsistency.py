@@ -7,6 +7,9 @@ from datetime import datetime
 from datetime import timedelta
 import ast
 
+##Opening the file required for output
+outputfile = open('output.csv','w+')
+
 ##CREATE A CREDENTIALS FILE NAME "credentials.txt", CONTENTS AS FOLLOWS: ['$USERNAME','$PASSWORD']
 ##THE PROGRAM SHOULD HAVE NO ISSUE READING THE CREDENTIALS FILE.
 
@@ -26,6 +29,13 @@ apdriver = cls(username, password , region='dd-ap')
 i_location = input("Please input which datacenter you would like to check (AP3/AP5) ")
 i_startdate = input("Please input the start date for the range that you would like checked in the following format (YYYY-MM-DD) ")
 i_enddate = input("Please input the end date for the range that you would like checked in the following format (YYYY-MM-DD) ")
+
+outputfile.write(i_location)
+outputfile.write('\n')
+outputfile.write('Date Range: ')
+lineoutput = (i_startdate+","+i_enddate)
+outputfile.write(lineoutput)
+outputfile.write('\n')
 
 #For Summary Report Date Start Date is exact End Date need to increase by one day
 #For Backup Report, first i need to shift by 2 days in reverse.
@@ -121,22 +131,26 @@ while i < len(apvalue):
 print ("Adjusted Values")
 print ("===============")
 print ("|Date|		|Advanced(B)|	|Essentials(B)|	  |Enterprise(B)|		|Advanced(S)|	|Essentials(S)|	  |Enterprise(S)|")
-
-#print (backupdays)
-
+outputfile.write(',,Backup,,,Summary\n')
+lineoutput = ('Date,Advanced,Essentials,Enterprise,Advanced,Essentials,Enterprise\n')
+outputfile.write(lineoutput)
 k = 0
 while k < len(backupdays):
 	listday = datetime.strptime(backupdays[k], '%Y-%m-%d')
 	listday = datetime.date(listday)
 	listday = listday + timedelta(days = 2)
 	newday = str(listday)
+	lineoutput = (newday +',' + str(backup_a[k]) + ',' + str(backup_es[k]) + ',' + str(backup_en[k]) + ',' + str(sum_a[k]) + ',' + str(sum_es[k]) + ',' + str(sum_en[k]))
 	print (newday , '		' , backup_a[k] , '		' , backup_es[k] , '		' , backup_en[k] , '				' , sum_a[k] , '		' , sum_es[k] , '			' , sum_en[k] )
+	outputfile.write(lineoutput)
+	outputfile.write('\n')
 	k+=1
 
 #========================================================#
 # So we everything prints out a-ok. Lets try comparing each storage type.
 #========================================================#
 print ('\n')
+outputfile.write('\n')
 # Essentials!
 k = 0
 errordates_es = list()
@@ -151,6 +165,15 @@ while k < len(backupdays):
 if len(errordates_es) != 0:
 	print ("The values in summary report and backup report for essential backup hours for the following days are incorrect: ")
 	print (errordates_es)
+	outputfile.write("The values in summary report and backup report for essential backup hours for the following days are incorrect: \n")
+	v = 0
+	aline = ''
+	while v < len(errordates_es):
+		aline = aline +','
+		aline = aline + errordates_es[v]
+		v+=1
+	outputfile.write(aline)
+	outputfile.write('\n')
 
 
 # Advanced!
@@ -168,7 +191,15 @@ while k < len(backupdays):
 if len(errordates_a) != 0:
 	print ("The values in summary report and backup report for advanced backup hours for the following days are incorrect: ")
 	print (errordates_a)
-
+	outputfile.write("The values in summary report and backup report for advanced backup hours for the following days are incorrect:")
+	v = 0
+	aline = ''
+	while v < len(errordates_a):
+		aline = aline + ","
+		aline = aline + errordates_a[v]
+		v+=1
+	outputfile.write(aline)	
+	outputfile.write('\n')
 # Enterprise!
 k = 0
 errordates_en = list()
@@ -184,7 +215,19 @@ while k < len(backupdays):
 if len(errordates_en) != 0:
 	print ("The values in summary report and backup report for enterprise backup hours for the following days are incorrect: ")
 	print (errordates_en)
-print ('Do double check these values with your billing to ensure no undercharge/overcharge.')
+	outputfile.write("The values in summary report and backup report for enterprise backup hours for the following days are incorrect: \n")
+	v = 0
+	aline = ''
+	while v < len(errordates_en):
+		aline = aline +','
+		aline = aline + errordates_en[v]
+		v+=1
+	outputfile.write(aline)
+	outputfile.write('\n')
+
+if 	len(errordates_en) != 0 or len(errordates_a) != 0 or len(errordates_es) != 0:
+	print ('Do double check these values with your billing to ensure no undercharge/overcharge.')
+	outputfile.write('Do double check these values with your billing to ensure no undercharge/overcharge.\n\n')
 #=====================================#
 #Time to check adv_client dates as well.
 #=====================================#
@@ -274,13 +317,43 @@ print ('The following essential client dates are incorrect: ', errordates_adv_es
 print ('The following advanced client dates are incorrect: ',errordates_adv_a)
 print ('The following enterprise client dates are incorrect: ',errordates_adv_en)
 
+v = 0
+aline = 'The following essential client dates are incorrect: '
+while v < len(errordates_adv_es):
+	aline = aline + ','
+	aline = aline + errordates_adv_es[v]
+	v+=1
+
+v = 0
+bline = 'The following advanced client dates are incorrect: '
+while v < len(errordates_adv_a):
+	bline = bline + ','
+	bline = bline + errordates_adv_a[v]
+	v+=1
+
+v = 0
+cline = 'The following enterprise client dates are incorrect: '
+while v < len(errordates_adv_es):
+	cline = cline + ','
+	cline = cline + errordates_adv_es[v]
+	v+=1
+
+outputfile.write(aline)
+outputfile.write('\n')
+outputfile.write(bline)
+outputfile.write('\n')
+outputfile.write(cline)
+
+outputfile.write('\n\nA review of the administrative logs show that the following actions pertaining to backup were performed: \n')
 print ('\nA review of the administrative logs show that the following actions pertaining to backup were performed: \n')
 
 compiled_errordates_adv = errordates_adv_es + errordates_adv_a + errordates_adv_en
 compiled_errordates_adv = set(compiled_errordates_adv)
 compiled_errordates_adv = list(compiled_errordates_adv)
 compiled_errordates_adv.sort()
-#print (compiled_errordates_adv)
+
+print (compiled_errordates_adv)
+
 adminvalues = apdriver.ex_audit_log_report(i_startdate,i_enddate)
 finaloutput =list()
 i = 1
@@ -294,6 +367,7 @@ while i < len(adminvalues):
 		if admindate == compiled_errordates_adv[j]:
 			devicename = adminline [7]
 			newdevname=''
+			#This strips device name of the IP address
 			k = 0
 			while k < len(devicename):
 				if devicename[k] == '[':
@@ -301,9 +375,10 @@ while i < len(adminvalues):
 				else:
 					newdevname = newdevname + devicename[k]
 				k+=1
-		if 'Backup' in adminline[8] or 'backup' in adminline[8]:
-			tempstring = "['"+admindate+"','" +adminline[2]+"','"+newdevname+"','"+adminline[8]+"']" 
-			finaloutput.append(tempstring)
+			if 'Backup' in adminline[8] or 'backup' in adminline[8]:
+				tempstring = "['"+admindate+"','" +adminline[2]+"','"+newdevname+"','"+adminline[8]+"']" 
+				#tempstring = ast.literal_eval(tempstring)
+				finaloutput.append(tempstring)
 
 		j+=1
 	i+=1
@@ -311,7 +386,21 @@ while i < len(adminvalues):
 finaloutput = set(finaloutput)
 finaloutput = list(finaloutput)
 
+#convert the finaloutput values to lists to make nested list
+lastCount = 0
+while lastCount <len(finaloutput):
+	templine = finaloutput[lastCount]
+	templine = ast.literal_eval(templine)
+	finaloutput[lastCount] = templine
+	lastCount+=1
+
+outputfile.write('Date,User,Server,Action\n')
+outputline = ''
 lastCount = 0
 while lastCount < len (finaloutput):
-	print (finaloutput[lastCount])
+	lastline = finaloutput[lastCount]
+	outputline = lastline[0] + "," + lastline[1] + "," + lastline[2] + "," + lastline[3] + "\n"
+	outputfile.write(outputline)
+	print (lastline[0], lastline[1], lastline[2], lastline[3])
+	#print (finaloutput[lastCount])
 	lastCount+=1
